@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 """Generates a figure that shows all benchmarking results
 """
 import sys

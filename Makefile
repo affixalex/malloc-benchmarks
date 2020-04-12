@@ -57,7 +57,7 @@ ifdef IMPLEMENTATIONS
 implem_list := $(IMPLEMENTATIONS)
 else
 # default value
-implem_list := system_default glibc tcmalloc jemalloc
+implem_list := system_default glibc tcmalloc jemalloc mallocng
 endif
 
 
@@ -75,6 +75,7 @@ benchmark_result_png := results.png
 glibc_url := git://sourceware.org/git/glibc.git
 tcmalloc_url := https://github.com/gperftools/gperftools.git
 jemalloc_url := https://github.com/jemalloc/jemalloc.git
+mallocng_url := https://github.com/richfelker/mallocng-draft.git
 
 glibc_version := 2.26
 glibc_alt_wget_url := https://ftpmirror.gnu.org/libc/glibc-$(glibc_version).tar.xz
@@ -83,6 +84,7 @@ glibc_build_dir := $(topdir)/glibc-build
 glibc_install_dir := $(topdir)/glibc-install
 tcmalloc_install_dir := $(topdir)/tcmalloc-install
 jemalloc_install_dir := $(topdir)/jemalloc-install
+mallocng_install_dir := $(topdir)/mallocng-draft
 
 
 #
@@ -112,6 +114,10 @@ endif
 ifeq ($(findstring jemalloc,$(implem_list)),jemalloc)
 	@[ ! -d jemalloc ] && git clone $(jemalloc_url) || echo "Jemalloc GIT repo seems to be already there"
 endif
+ifeq ($(findstring mallocng,$(implem_list)),mallocng)
+	@[ ! -d mallocng ] && git clone $(mallocng_url) || echo "mallocng GIT repo seems to be already there"
+endif
+
 
 
 #
@@ -141,7 +147,11 @@ $(jemalloc_install_dir)/lib/libjemalloc.so:
 		./configure --prefix=$(jemalloc_install_dir) && \
 		make && \
 		( make install || true )
-		
+
+$(mallocng_install_dir)/libmallocng.so:
+	cd mallocng-draft && \
+		make
+
 build:
 	$(MAKE) -C benchmark-src
 ifeq ($(findstring glibc,$(implem_list)),glibc)
@@ -153,6 +163,10 @@ endif
 ifeq ($(findstring jemalloc,$(implem_list)),jemalloc)
 	$(MAKE) $(jemalloc_install_dir)/lib/libjemalloc.so
 endif
+ifeq ($(findstring mallocng,$(implem_list)),mallocng)
+	$(MAKE) $(mallocng_install_dir)/libmallocng.so
+endif
+
 	@echo "Congrats! Successfully built all [$(implem_list)] malloc implementations to test."
 	
 collect_results:

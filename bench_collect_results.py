@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 """Generate benchmarking results in JSON form, using GNU libc benchmarking utility;
 different allocators are injected into that utility by using LD_PRELOAD trick.
 """
@@ -16,6 +16,7 @@ internal_benchmark_util = 'benchmark-src/bench-malloc-thread'
 glibc_install_dir = 'glibc-install'
 tcmalloc_install_dir = 'tcmalloc-install'
 jemalloc_install_dir = 'jemalloc-install'
+mallocng_install_dir = 'mallocng-draft'
 
 impl_preload_libs = {
     'system_default':'',
@@ -23,7 +24,8 @@ impl_preload_libs = {
     
     # to test tcmalloc and jemalloc implementations we simply use the LD_PRELOAD trick:
     'tcmalloc': tcmalloc_install_dir + '/lib/libtcmalloc.so',
-    'jemalloc': jemalloc_install_dir + '/lib/libjemalloc.so'
+    'jemalloc': jemalloc_install_dir + '/lib/libjemalloc.so',
+    'mallocng': mallocng_install_dir + '/libmallocng.so'
 }
 
 # to successfully preload the tcmalloc,jemalloc libs we will also need to preload the C++ standard lib and gcc_s lib:
@@ -38,7 +40,8 @@ benchmark_util = {
     'glibc': glibc_install_dir + '/lib/ld-linux-x86-64.so.2 --library-path ' + glibc_install_dir + '/lib ' + internal_benchmark_util,
     
     'tcmalloc': internal_benchmark_util,
-    'jemalloc': internal_benchmark_util
+    'jemalloc': internal_benchmark_util,
+    'mallocng': internal_benchmark_util
 }
 
 def find(name, paths):

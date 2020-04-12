@@ -4,6 +4,7 @@ glibc-build/
 glibc-install/
 glibc/
 gperftools/
+mallocng-draft/
 jemalloc-install/
 jemalloc/
 tcmalloc-install/
